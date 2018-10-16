@@ -1,0 +1,52 @@
+---
+title: "Task1"
+author: "Sara Regina Ferreira de Faria"
+date: "27/09/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Tokenization - identifying appropriate tokens such as words, punctuation, and numbers. Writing a function that takes a file as input and returns a tokenized version of it.
+```{r}
+library(keras)
+tokenizer <- text_tokenizer(num_words = NULL,
+  filters = "!\"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n", lower = TRUE,
+  split = " ", char_level = FALSE, oov_token = NULL)
+
+tokenizerBlogs <- fit_text_tokenizer(tokenizer, blogs)
+tokenizerTwitter <- fit_text_tokenizer(tokenizer, twitter)
+tokenizerNews <- fit_text_tokenizer(tokenizer, news)
+```
+
+
+```{r}
+tokenizerBlogs$word_counts
+```
+
+## Profanity filtering - removing profanity and other words you do not want to predict.
+```{r}
+download.file("https://www.cs.cmu.edu/~biglou/resources/bad-words.txt", "profane");
+profane <- read.table("profane")
+
+library(tm)
+ovid <- PCorpus(VectorSource(twitter), readerControl = list(language = "en"))
+twitter <- tm_map(ovid, removePunctuation)
+twitter <- tm_map(twitter, content_transformer(tolower))
+twitter <- tm_map(twitter, removeWords, profane$V1)
+
+```
+
+
+## Aknoledments
+
+https://tensorflow.rstudio.com/keras/reference/text_tokenizer.html
+
+https://cran.r-project.org/web/packages/tm/vignettes/tm.pdf
+
+http://onertipaday.blogspot.com/2011/07/word-cloud-in-r.html
+
+https://rstudio-pubs-static.s3.amazonaws.com/395250_cd330aafc4b84d328971156606bc4f7c.html
+

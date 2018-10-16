@@ -1,0 +1,22 @@
+---
+title: "Task6"
+author: "Sara Regina Ferreira de Faria"
+date: "27/09/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## What are the most interesting ways you could show off your algorithm?
+
+
+
+## Are there any data visualizations you think might be helpful (look at the Swiftkey data dashboard if you have it loaded on your phone)?
+
+
+
+## How should you document the use of your data product (separately from how you created it) so that others can rapidly deploy your algorithm?
+
+

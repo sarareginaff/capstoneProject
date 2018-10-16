@@ -1,0 +1,25 @@
+---
+title: "Task4"
+author: "Sara Regina Ferreira de Faria"
+date: "27/09/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## How does the model perform for different choices of the parameters and size of the model?
+
+
+
+## How much does the model slow down for the performance you gain?
+
+
+
+## Does perplexity correlate with the other measures of accuracy?
+
+
+
+## Can you reduce the size of the model (number of parameters) without reducing performance?
+

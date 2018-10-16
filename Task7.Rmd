@@ -1,0 +1,21 @@
+---
+title: "Task7"
+author: "Sara Regina Ferreira de Faria"
+date: "27/09/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## How can you briefly explain how your predictive model works?
+
+
+
+## How can you succinctly quantitatively summarize the performance of your prediction algorithm?
+
+
+
+## How can you show the user how the product works?
+

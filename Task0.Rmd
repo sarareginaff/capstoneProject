@@ -1,0 +1,66 @@
+---
+title: "Task0"
+author: "Sara Regina Ferreira de Faria"
+date: "27/09/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## What do the data look like?
+
+The data has four folders: one for each language. They are separated in german (de_DE), english (en_US), finish (fi_FI) and russian (ru_RU). In each file inside these folder there are many phrases in the selected language. Each phrase takes one line in the file and is wrapped in quotation marks.
+
+## Where do the data come from?
+
+Inside each folder there are three files: one with data from blogs, one with data from newspapers and the last one with data from twitter.
+
+## Can you think of any other data sources that might help you in this project?
+
+* The wordnet package, that is a interface to the WordNet lexical database of English
+
+* The qdapDictionaries package
+
+* The hunspell package, to check misspell words
+
+* The Offensive/Profane word list from Luis von Ahn's Research Group 
+
+## What are the common steps in natural language processing?
+
+1 - Lexical Analysis: identifying and analyzing the structure of words. The goal is to divide the chunk of txt into paragraphs, sentences, and words.
+
+2 - Syntactic Analysis: to arrange the words in a manner that shows the relationship among them.
+
+3 - Semantic Analysis: in this phase, the meaning of the single phrase is analysed.
+
+4 - Discourse Integration: now the meaning of the hole text is analysed. The current phrase cepends on the meaning of the previous one and will imply in the meaning of the next one.
+
+## What are some common issues in the analysis of text data?
+
+A few issues in the analysis of text data are listed bellow:
+
+* People can misstype some words;
+
+* People can use words from other languages (what can be confousing with words that were acctually 'imported' from other languages)
+
+* People can use abbreviated words (like 'u' instead of 'you')
+
+* People can use profane words, that the data scientist may want to leave out
+
+* More than one meaning for a single word
+
+## What is the relationship between NLP and the concepts you have learned in the Specialization?
+
+As any other data analysis, the NLP has to follow the steps learned in the specialization: first you get and clean the data, then you make some exploratory and statistical analysis and after that you build a model. To replicate and explain the study, everything has to be documented and a web app or a presentation can be made.
+
+## Aknowlagments
+
+https://www.tutorialspoint.com/artificial_intelligence/artificial_intelligence_natural_language_processing.htm
+
+https://en.wikipedia.org/wiki/Natural_language_processing
+
+https://www.youtube.com/watch?v=pHiIwQk57dc
+
+https://www.cs.cmu.edu/~biglou/resources/
