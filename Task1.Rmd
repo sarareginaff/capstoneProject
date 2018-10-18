@@ -28,15 +28,22 @@ tokenizerBlogs$word_counts
 
 ## Profanity filtering - removing profanity and other words you do not want to predict.
 ```{r}
+library(tm)
 download.file("https://www.cs.cmu.edu/~biglou/resources/bad-words.txt", "profane");
 profane <- read.table("profane")
 
-library(tm)
-ovid <- PCorpus(VectorSource(twitter), readerControl = list(language = "en"))
+toSpace <- content_transformer(function (x , pattern ) gsub(pattern, " ", x))
+
+ovid <- Corpus(VectorSource(twitter), readerControl = list(language = "en"))
 twitter <- tm_map(ovid, removePunctuation)
 twitter <- tm_map(twitter, content_transformer(tolower))
 twitter <- tm_map(twitter, removeWords, profane$V1)
-
+twitter <- tm_map(twitter, toSpace, "/")
+twitter <- tm_map(twitter, toSpace, "@")
+twitter <- tm_map(twitter, toSpace, "\\|")
+twitter <- tm_map(twitter, removeNumbers)
+twitter <- tm_map(twitter, removeWords, stopwords("english"))
+twitter <- tm_map(twitter, stripWhitespace)
 ```
 
 

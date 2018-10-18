@@ -11,19 +11,89 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Some words are more frequent than others - what are the distributions of word frequencies?
 
+Probably the personal pronoms, the auxiliar verbs, the conjunctions and the verb to be will have the higher frequency. 
+
+
+```{r}
+library(wordcloud)
+dtm <- TermDocumentMatrix(twitter)
+m <- as.matrix(dtm)
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
+head(d, 10)
+
+set.seed(1)
+wordcloud(words = d$word, freq = d$freq, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+
+barplot(d[1:10,]$freq, las = 2, names.arg = d[1:10,]$word,
+        col ="lightblue", main ="Most frequent words",
+        ylab = "Word frequencies")
+```
 
 
 ## What are the frequencies of 2-grams and 3-grams in the dataset?
 
+```{r}
+library (ngram)
+tokenizer2ngram <- function(x) unlist(lapply(ngrams(twitter[[x]][["content"]], 2), paste, collapse = " "), use.names = FALSE)
+tdm2ngram <- TermDocumentMatrix(twitter, control = list(tokenize = tokenizer2ngram))
 
+inspect(tdm2ngram)
+
+tokenizer3ngram <- function(x) unlist(lapply(ngrams(twitter[[x]][["content"]], 3), paste, collapse = " "), use.names = FALSE)
+tdm3ngram <- TermDocumentMatrix(twitter, control = list(tokenize = tokenizer3ngram))
+
+inspect(tdm3ngram)
+```
 
 ## How many unique words do you need in a frequency sorted dictionary to cover 50% of all word instances in the language? 90%?
 
+Assuming that 100% is the amout words in this dataset we can calculate it this way:
+```{r}
+# sort data with frequency
+m <- as.matrix(tdm2ngram)
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
 
+#unique words
+nrow(d)
+
+#total words
+sum(d[,2])
+
+#50%
+sum(d[1:(nrow(d) * 0.5),2])
+
+#90%
+sum(d[1:(nrow(d) * 0.9),2])
+```
+
+And just to have an idea: according to the Oxford dictionary, the total number of English words is 171476 in current use. So the databases has a coverage of:
+```{r}
+tdm2ngram$nrow / 171476
+```
 
 ## How do you evaluate how many of the words come from foreign languages?
 
+This code takes out of data set all words that are not well spelled. So it gets also the nonEnglish words.
 
+```{r}
+library("hunspell")
+bad_words <- hunspell(twitterTxt)
+bad_words <- unlist(bad_words)
+twitter <- tm_map(twitter, removeWords, bad_words)
+```
 
 ## Can you think of a way to increase the coverage -- identifying words that may not be in the corpora or using a smaller number of words in the dictionary to cover the same number of phrases?
 
+One possibilty is to analyze the words with low frequency and find a pattern between them and then getting data that . For instance: the technical words probably has a lower frequency, so if we include technical essays we can increase the coverage.
+
+## Acknoledgments
+
+http://www.sthda.com/english/wiki/text-mining-and-word-cloud-fundamentals-in-r-5-simple-steps-you-should-know
+
+http://tm.r-forge.r-project.org/faq.html
+
+https://en.oxforddictionaries.com/explore/how-many-words-are-there-in-the-english-language/
