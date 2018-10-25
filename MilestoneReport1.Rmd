@@ -1,0 +1,43 @@
+---
+title: "Milestone Report 1"
+author: "Sara Regina Ferreira de Faria"
+date: "22/10/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Download and Load Data
+
+```{r, eval=FALSE}
+download.file("https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip", "data.zip")
+
+con <- file("final/en_US/en_US.twitter.txt", "r") 
+twitter <- readLines(con) 
+close(con)
+
+con <- file("final/en_US/en_US.blogs.txt", "r") 
+blogs <- readLines(con) 
+close(con)
+
+con <- file("final/en_US/en_US.news.txt", "r") 
+news <- readLines(con) 
+close(con)
+```
+
+## Summary about the data set
+
+explain the major features of the data. 
+basic summaries of the three files
+Word counts, line counts and basic data tables
+
+## Findings on the data set
+
+basic plots, such as histograms to illustrate features of the data?
+
+## Plans for prediction algorithm and Shiny App
+
+plans for creating the prediction algorithm and Shiny app 
+understandable to a non-data scientist manager.

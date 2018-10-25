@@ -34,8 +34,8 @@ profane <- read.table("profane")
 
 toSpace <- content_transformer(function (x , pattern ) gsub(pattern, " ", x))
 
-ovid <- Corpus(VectorSource(twitter), readerControl = list(language = "en"))
-twitter <- tm_map(ovid, removePunctuation)
+twitter <- Corpus(VectorSource(twitter), readerControl = list(language = "en"))
+twitter <- tm_map(twitter, removePunctuation)
 twitter <- tm_map(twitter, content_transformer(tolower))
 twitter <- tm_map(twitter, removeWords, profane$V1)
 twitter <- tm_map(twitter, toSpace, "/")

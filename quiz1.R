@@ -1,7 +1,7 @@
 library(tm)
 
 con <- file("final/en_US/en_US.twitter.txt", "r") 
-twitter <- readLines(con,100) 
+twitter <- readLines(con,1000) 
 close(con)
 
 con <- file("final/en_US/en_US.blogs.txt", "r") 

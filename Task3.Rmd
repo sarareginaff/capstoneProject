@@ -9,8 +9,91 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## 1 - Build basic n-gram model - using the exploratory analysis you performed, build a basic n-gram model for predicting the next word based on the previous 1, 2, or 3 words.
+## 2 - Build a model to handle unseen n-grams - in some cases people will want to type a combination of words that does not appear in the corpora. Build a model to handle cases where a particular n-gram isn't observed.
+
+First of all: build n-grams
+
+```{r}
+library(tm)
+library(RWeka)
+library(tidyr)
+library(caret)
+
+# 2-grams 
+token_2 <- NGramTokenizer(twitter, Weka_control(min=2,max=2, delimiters = " \\t\\r\\n.!?,;\"()"))
+two_word <- data.frame(table(token_2))
+two_word <- two_word[order(two_word$Freq,decreasing=TRUE),]
+two_word <- separate(two_word, token_2, cbind("word_1", "word_2"), sep = " ", remove = TRUE, convert = FALSE)
+colnames(two_word) <- c("previous_words", "last_word", "frequency")
+
+# 3-grams
+token_3 <- NGramTokenizer(twitter, Weka_control(min=3,max=3, delimiters = " \\t\\r\\n.!?,;\"()"))
+three_word <- data.frame(table(token_3))
+three_word <- three_word[order(three_word$Freq,decreasing=TRUE),]
+three_word <- separate(three_word, token_3, cbind("word_1", "word_2", "word_3"), sep = " ", remove = TRUE, convert = FALSE)
+three_word$word_12 <- paste(three_word$word_1,three_word$word_2,sep=" ")
+three_word <- as.data.frame(cbind(three_word$word_12, three_word$word_3, three_word$Freq))
+colnames(three_word) <- c("previous_words", "last_word", "frequency")
+
+# 4-grams
+token_4 <- NGramTokenizer(twitter, Weka_control(min=4,max=4, delimiters = " \\t\\r\\n.!?,;\"()"))
+four_word <- data.frame(table(token_4))
+four_word <- four_word[order(four_word$Freq,decreasing=TRUE),]
+four_word <- separate(four_word, token_4, cbind("word_1", "word_2", "word_3", "word_4"), sep = " ", remove = TRUE, convert = FALSE)
+four_word$word_123 <- paste(four_word$word_1,four_word$word_2,four_word$word_3,sep=" ")
+four_word <- as.data.frame(cbind(four_word$word_123, four_word$word_4, four_word$Freq))
+colnames(four_word) <- c("previous_words", "last_word", "frequency")
+```
+
+Build basic model
+
+```{r}
+predictNextWord <- function(sentence){
+  predictedWord <- ""
+  splitWords <- as.array(strsplit(sentence, " ")[[1]])
+  numWords <- length(splitWords)
+  
+  if (numWords > 3)
+  {
+    splitWords <- splitWords[-(1:(numWords-3))]
+    numWords <- length(splitWords)
+  }
+  
+  while (predictedWord == "" && numWords > 0) {
+    if (numWords == 3){
+      equalPreviousWords <- four_word[four_word$previous_words == paste(splitWords[1],splitWords[2],splitWords[3],sep=" "),]
+    } else if (numWords == 2){
+      equalPreviousWords <- three_word[three_word$previous_words == paste(splitWords[1],splitWords[2],sep=" "),]
+    } else if (numWords == 1){
+      equalPreviousWords <- two_word[two_word$previous_words == splitWords[1],]
+    }
+    equalPreviousWords <- equalPreviousWords[order(equalPreviousWords$frequency,decreasing=TRUE),]
+      if (nrow(equalPreviousWords) > 0)
+      {
+        predictedWord <- equalPreviousWords[1,]$last_word
+      }
+      else
+      { 
+        if (numWords > 1)
+        {
+          splitWords <- splitWords[-(1:(numWords-1))]
+          numWords <- length(splitWords)
+        } else
+        {
+          numWords <- 0
+        }
+      }
+  }
+  
+  predictedWord
+}
+```
+
+
 ## How can you efficiently store an n-gram model (think Markov Chains)?
 
+The basic model is just a function. To build a more complex model is possible to build a Markov Chain and store it in a matrix with 'previous not' and 'probability of word'.
 
 
 ## How can you use the knowledge about word frequencies to make your model smaller and more efficient?
@@ -19,17 +102,28 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## How many parameters do you need (i.e. how big is n in your n-gram model)?
 
+In the basic model I need from one to three words to predict the next one.
 
 
 ## Can you think of simple ways to "smooth" the probabilities (think about giving all n-grams a non-zero probability even if they aren't observed in the data) ?
 
 
 
+
 ## How do you evaluate whether your model is any good?
 
+Split the data in train, test and validation sets. Using the test set is possible to create models with lower train errors. Using the validation set is possible to choose the best model.
 
 
 ## How can you use backoff models to estimate the probability of unobserved n-grams?
 
 
 
+## Acknolegments
+https://www.youtube.com/watch?v=HellsQ2JF2k
+
+https://www.youtube.com/watch?v=neiW5Ugsob8
+
+https://tidyr.tidyverse.org/reference/separate.html
+
+https://www.tidytextmining.com/ngrams.html
