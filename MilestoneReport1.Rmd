@@ -2,18 +2,22 @@
 title: "Milestone Report 1"
 author: "Sara Regina Ferreira de Faria"
 date: "22/10/2018"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Download and Load Data
+## Download and Load Data of English
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
 download.file("https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip", "data.zip")
+```
 
+```{r, message=FALSE, warning=FALSE}
 con <- file("final/en_US/en_US.twitter.txt", "r") 
 twitter <- readLines(con) 
 close(con)
@@ -29,15 +33,155 @@ close(con)
 
 ## Summary about the data set
 
-explain the major features of the data. 
-basic summaries of the three files
-Word counts, line counts and basic data tables
+The data has four folders: one for each language. They are separated in german (de_DE), english (en_US), finish (fi_FI) and russian (ru_RU). In each file inside these folder there are many phrases in the selected language. Each phrase takes one line in the file and is wrapped in quotation marks. In this work we are going to deal only with English texts.
+
+Number of lines in each data set:
+```{r, message=FALSE, warning=FALSE}
+paste("twitter:", length(twitter))
+paste("blogs:",length(blogs))
+paste("news",length(news))
+```
+
+The biggest text in each data set is:
+```{r, message=FALSE, warning=FALSE}
+paste("twitter:", sort(nchar(twitter), decreasing = TRUE)[1])
+paste("blogs:",sort(nchar(blogs), decreasing = TRUE)[1])
+paste("news",sort(nchar(news), decreasing = TRUE)[1])
+```
 
 ## Findings on the data set
 
-basic plots, such as histograms to illustrate features of the data?
+Here we have clouds and the 10 more frequent words for the first 10000 entries in each data set:
+
+# Load first 10000 entries of each dataset
+```{r, message=FALSE, warning=FALSE}
+con <- file("final/en_US/en_US.twitter.txt", "r") 
+twitter <- readLines(con, 10000) 
+close(con)
+
+con <- file("final/en_US/en_US.blogs.txt", "r") 
+blogs <- readLines(con, 10000) 
+close(con)
+
+con <- file("final/en_US/en_US.news.txt", "r") 
+news <- readLines(con, 10000) 
+close(con)
+```
+
+# Twitter
+
+```{r,message=FALSE, warning=FALSE}
+library(tm)
+download.file("https://www.cs.cmu.edu/~biglou/resources/bad-words.txt", "profane");
+profane <- read.table("profane")
+
+toSpace <- content_transformer(function (x , pattern ) gsub(pattern, " ", x))
+
+twitter <- Corpus(VectorSource(twitter), readerControl = list(language = "en"))
+twitter <- tm_map(twitter, removePunctuation)
+twitter <- tm_map(twitter, content_transformer(tolower))
+twitter <- tm_map(twitter, removeWords, profane$V1)
+twitter <- tm_map(twitter, toSpace, "/")
+twitter <- tm_map(twitter, toSpace, "@")
+twitter <- tm_map(twitter, toSpace, "\\|")
+twitter <- tm_map(twitter, removeNumbers)
+twitter <- tm_map(twitter, removeWords, stopwords("english"))
+twitter <- tm_map(twitter, stripWhitespace)
+```
+
+```{r, message=FALSE, warning=FALSE}
+library(wordcloud)
+library(tm)
+gc()
+twitter <- Corpus(VectorSource(twitter), readerControl = list(language = "en"))
+dtmTwitter <- TermDocumentMatrix(twitter)
+mTwitter <- as.matrix(dtmTwitter)
+vTwitter <- sort(rowSums(mTwitter),decreasing=TRUE)
+dTwitter <- data.frame(word = names(vTwitter),freq=vTwitter)
+```
+
+```{r,message=FALSE, warning=FALSE}
+set.seed(1)
+wordcloud(words = dTwitter$word, freq = dTwitter$freq, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+
+barplot(dTwitter[1:10,]$freq, las = 2, names.arg = dTwitter[1:10,]$word,
+        col ="lightblue", main ="Most frequent words - Twitter",
+        ylab = "Word frequencies")
+```
+
+
+# Blogs
+```{r, message=FALSE, warning=FALSE}
+blogs <- Corpus(VectorSource(blogs), readerControl = list(language = "en"))
+blogs <- tm_map(blogs, removePunctuation)
+blogs <- tm_map(blogs, content_transformer(tolower))
+blogs <- tm_map(blogs, removeWords, profane$V1)
+blogs <- tm_map(blogs, toSpace, "/")
+blogs <- tm_map(blogs, toSpace, "@")
+blogs <- tm_map(blogs, toSpace, "\\|")
+blogs <- tm_map(blogs, removeNumbers)
+blogs <- tm_map(blogs, removeWords, stopwords("english"))
+blogs <- tm_map(blogs, stripWhitespace)
+```
+
+```{r, message=FALSE, warning=FALSE}
+gc()
+blogs <- Corpus(VectorSource(blogs), readerControl = list(language = "en"))
+dtmBlogs <- TermDocumentMatrix(blogs)
+mBlogs <- as.matrix(dtmBlogs)
+vBlogs <- sort(rowSums(mBlogs),decreasing=TRUE)
+dBlogs <- data.frame(word = names(vBlogs),freq=vBlogs)
+```
+
+```{r, message=FALSE, warning=FALSE}
+set.seed(1)
+wordcloud(words = dBlogs$word, freq = dBlogs$freq, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+
+barplot(dBlogs[1:10,]$freq, las = 2, names.arg = dBlogs[1:10,]$word,
+        col ="lightblue", main ="Most frequent words - Blogs",
+        ylab = "Word frequencies")
+```
+
+# News
+```{r, message=FALSE, warning=FALSE}
+news <- Corpus(VectorSource(news), readerControl = list(language = "en"))
+news <- tm_map(news, removePunctuation)
+news <- tm_map(news, content_transformer(tolower))
+news <- tm_map(news, removeWords, profane$V1)
+news <- tm_map(news, toSpace, "/")
+news <- tm_map(news, toSpace, "@")
+news <- tm_map(news, toSpace, "\\|")
+news <- tm_map(news, removeNumbers)
+news <- tm_map(news, removeWords, stopwords("english"))
+news <- tm_map(news, stripWhitespace)
+```
+
+```{r, message=FALSE, warning=FALSE}
+gc()
+news <- Corpus(VectorSource(news), readerControl = list(language = "en"))
+dtmNews <- TermDocumentMatrix(news)
+mNews <- as.matrix(dtmNews)
+vNews <- sort(rowSums(mNews),decreasing=TRUE)
+dNews <- data.frame(word = names(vNews),freq=vNews)
+```
+
+```{r, message=FALSE, warning=FALSE}
+set.seed(1)
+wordcloud(words = dNews$word, freq = dNews$freq, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+
+barplot(dNews[1:10,]$freq, las = 2, names.arg = dNews[1:10,]$word,
+        col ="lightblue", main ="Most frequent words - News",
+        ylab = "Word frequencies")
+```
 
 ## Plans for prediction algorithm and Shiny App
 
-plans for creating the prediction algorithm and Shiny app 
-understandable to a non-data scientist manager.
+The basic prediction can be made using n-grams, i.e. combination of words included in the data set. In this way we can predict the next word as the most frequent word after the typed combination of words.
+
+The Shiny App will be simple: just a box to type a sentence and as the person writes the words, the model suggests the next one based in everything that was typed until then.
