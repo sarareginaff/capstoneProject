@@ -9,6 +9,39 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Build Model using Markov Chains
+
+"The Markov Property states that the probability of future states depends only on the present state, not on the sequence of events that preceded it" https://sookocheff.com/post/nlp/ngram-modeling-with-markov-chains/
+
+http://rstudio-pubs-static.s3.amazonaws.com/145695_54511af736d945a0a09101536f34aeb6.html#/
+
+http://www.cs.cornell.edu/courses/cs4740/2014sp/lectures/smoothing+backoff.pdf
+
+
+https://www.datacamp.com/community/tutorials/markov-chain-analysis-r
+https://dataconomy.com/2018/03/an-introduction-to-markov-chains-using-r/
+
+http://rpubs.com/Lalithah/milestonereport
+https://nohahady.github.io/the-report/the_report.html
+http://rpubs.com/khadar/456438
+
+```{r}
+library(diagram)
+library(markovchain)
+
+DriverZone <- c("North", "South", "West")
+ZoneTransition <- matrix(c(0.3,0.3,0.4,0.4,0.4,0.2,0.5,0.3,0.2), nrow=3, byrow=T, dimname = list(DriverZone, DriverZone))
+
+McZone <- new("markovchain", states = DriverZone, byrow = T, transitionMatrix = ZoneTransition, name = "Driver Movement")
+
+plotmat(ZoneTransition, pos=c(1,2), lwd=1)
+
+sequence <- c("a", "b", "a", "a", "a", "a", "b", "a", "b", "a", 
+              "b", "a", "a", "b", "b", "b", "a")
+mcFit <- markovchainFit(data=sequence)
+
+```
+
 ## How does the model perform for different choices of the parameters and size of the model?
 
 
