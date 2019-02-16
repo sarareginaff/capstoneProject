@@ -1,15 +1,15 @@
 library(tm)
 
 con <- file("final/en_US/en_US.twitter.txt", "r") 
-twitter <- readLines(con,1000) 
+twitter <- readLines(con,10000) 
 close(con)
 
 con <- file("final/en_US/en_US.blogs.txt", "r") 
-blogs <- readLines(con) 
+blogs <- readLines(con,10000) 
 close(con)
 
 con <- file("final/en_US/en_US.news.txt", "r") 
-news <- readLines(con) 
+news <- readLines(con,10000) 
 close(con)
 
 sort(nchar(twitter), decreasing = TRUE)[1]
